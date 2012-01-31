@@ -54,7 +54,9 @@ function socketUpload(idForm){
 var fileObj = fso.GetFile(filePath);
 
 //document.write(fileObj.Name);
+socket.on("beginTransfer", fonction(fileObj){/* quelque chose*/});
+//or
 socket.send(fileObj);
-
+// ??
 fso = null;
 }
