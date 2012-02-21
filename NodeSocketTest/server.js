@@ -1,36 +1,31 @@
-//var http = require("http");
-//var path = require("path");
-//var sys = require("util");
-//var io = require("socket.io");
-	
-//	var server = http.createServer(function(req,res){
-	
-//			res.writeHead(200,{'content-type':'text/plain'});
-//			res.write('received upload: \n\n');
-//			res.end("Hello Dude");
-//	}).listen(8080);
-	
-//	io = io.listen(server);
+var app = require('http').createServer(handler);
+var io = require('socket.io').listen(app);
+var fs = require('fs');
 
-//Import Socket.io module
-var io = require('socket.io');
-//Creates a HTTP Server
-var socket = io.listen(8124);
-//Bind the Connection Event
-//This will be fired every time when a new connection is made
-socket.sockets.on('connection',function(socket){
- 
-        //This will be fired when data is received from client over a single socket
-        socket.on('message', function(msg){
-            console.log('Received message from client ',msg);
-        });
-        //Emit a message to client
-        socket.emit('greet',{hello: 'world'});
-        //This will fire when the client has disconnected
-        socket.on('disconnect', function(){
-            console.log('Server has disconnected');
-        });
+app.listen(80);
+
+// Envoie de la page.
+function handler(req,res){
+	fs.readFile(__dirname+'/page.html',
+	function(err,data){
+		if(err){
+			res.writeHead(500);
+			return res.end('Error loading page.html');
+}
+
+			res.writeHead(200);
+			res.end(data);
+	});
+}
+
+// Connection et envoie de message (style brouillon)
+io.sockets.on('connection', function (socket) {
+	socket.emit('drop', { helloduDrop: 'world' });
+	socket.on('taille', function (data) {
+		console.log(data);
+		});
+	socket.emit('click', { helloduClick: 'world' });
+	socket.on('taille', function (data) {
+		console.log(data);
+		});
 });
-	
-	
-	
