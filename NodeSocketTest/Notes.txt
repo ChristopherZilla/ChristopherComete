@@ -1,0 +1,22 @@
+Notes:
+Etat: Toujours en phase de développement.
+
+Côté serveur:
+
+- Mise en place d'un petit serveur Node pour afficher la page et dialoguer avec.
+- Nécéssité de mettre en place la fonctionnalité de stockage du fichier.
+
+Côté client:
+
+- "upload" d'un fichier soit par drag'n drop soit par formulaire.
+	
+	Problèmes:
+		- Externalisation du code (mettre dans un autre fichier et proposer une manière simple d'utiliser les fonctions de la librairie.
+		- Lors de la soumission du formulaire, le dialogue avec le serveur semble se faire seulement si il y a une alert() avant la réception
+		du message du serveur. Alerte qui apparait 2 fois de suite alors qu'elle n'est appelé qu'une fois.
+		- Le script ne fonctionne que si il se trouve après le code html concerné.
+		- Il serait peut-être mieux qu'après les messages de connexion ce soit le client qui initie le dialogue avec le serveur.
+		
+Améliorations:
+
+Boîte de dialogue avec message de téléchargement en cours (ou quelque chose dans l'idée), gestion des cas d'abandon, des cas d'erreurs etc...

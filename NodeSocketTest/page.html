@@ -1,0 +1,101 @@
+<html>
+
+	<head>
+		<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript" src="jquery-1.4.2.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+	</head>
+	
+	<body>
+		<div id="drop_zone" class="box">
+		</div>
+
+		<form>
+				<input id='file' type="file" name="upload" multiple="multiple">
+				<input id="drop_btn" type="submit" value="Upload file" onclick="handleFileClickSelect();"/>
+		</form>
+
+	<script>
+	<!--
+		
+		// Fonction principale pour le téléchargement via drag'n drop.
+		function handleFileSelect(evt){
+			evt.stopPropagation(); // Empêche la redirection.
+			evt.preventDefault(); // Empêcher le comportement par défaut du navigateur qui serait d'essayer d'afficher le fichier.
+		
+			var files = evt.dataTransfer.files; // Récupération d'une liste de fichier.
+			var file = files[0]; // Récupération du premier fichier.
+			var fname = files[0].name; // Récupération du nom du fichier.
+			var fsize =  files[0].size; // Récupération de la taille du fichier.
+			var ftype = files[0].type; // Récupération du type de fichier.
+			var reader = new FileReader(); // Objet servant à lire le ficher.
+		
+			socket = io.connect('http://localhost'); //connexion au serveur, un message "connection" est envoyé au serveur.
+			
+			// A le réception du message "drop" du serveur.
+			socket.on("drop",function(){
+				console.log("Yeah"); // Vérification console.
+				var bin = reader.readAsArrayBuffer(file); // On demande à l'objet reader de lire le fichier.
+				
+				// action à effectuer lors du chargement des données.
+				reader.onload = function(e){
+					socket.emit(bin); // envoie du fichier.
+				};
+				
+				// action à effectuer quand le chargement est fini.
+				reader.onloadend= function(e){
+					alert("terminé"); // un alert pour signaler que l'upload et terminé.
+				}
+			});
+		}		
+
+		function handleDragOver(evt){
+			evt.stopPropagation();
+			evt.preventDefault();
+			evt.dataTransfer.dropEffect = 'copy'; 
+		}
+
+		// Fonction principale pour le téléchargement via formulaire.
+		function handleFileClickSelect(evt){
+			var files = document.getElementById("file").files; // Récupération d'une liste de fichier.
+			var file = files[0]; // Récupération du nom du fichier.
+	
+			var reader = new FileReader(); // Objet servant à lire le ficher.
+	
+	
+			socket = io.connect('http://localhost'); //connexion au serveur, un message "connection" est envoyé au serveur.
+			
+			alert("presque"); //un alert() étrangement nécessaire pour que la socket fonctionne.
+			
+			// A le réception du message "drop" du serveur.
+			socket.on("click",function(){
+		
+				var bin = reader.readAsArrayBuffer(file); // On demande à l'objet reader de lire le fichier.
+				console.log("Click"); // Vérification console.
+				
+				// action à effectuer lors du chargement des données.
+				reader.onload = function(e){
+					socket.emit(bin); // envoie du fichier.
+				};
+				
+				// action à effectuer quand le chargement est fini.
+				reader.onloadend= function(e){
+					alert("terminé"); // un alert pour signaler que l'upload et terminé.
+				}
+			});
+		
+		}
+		
+		// Les listeners,les éléments et les évènements. 
+		var dropZone = document.getElementById("drop_zone");
+		dropZone.addEventListener('dragover', handleDragOver, false);
+		dropZone.addEventListener('drop', handleFileSelect, false);
+
+		var dropBtn = document.getElementById("drop_btn"); // Ne semble pas fonctionner.
+		dropBtn.addEventListener('click',handleFileClickSelect, false); // Ne semble pas fonctionner.
+	
+	-->
+	</script>
+
+</body>
+</html>
