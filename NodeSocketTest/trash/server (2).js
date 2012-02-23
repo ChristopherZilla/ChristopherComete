@@ -21,14 +21,11 @@ function handler(req,res){
 // Connection et envoie de message (style brouillon)
 io.sockets.on('connection', function (socket) {
 	socket.emit('drop', { helloduDrop: 'world' });
-	socket.on('incoming', function (data) {
+	socket.on('taille', function (data) {
 		console.log(data);
 		});
 	socket.emit('click', { helloduClick: 'world' });
-	socket.on('incoming', function (data) { // Ajout du deuxième incoming pour le click...autre bizzarerie
-		console.log(data);
-		});
-	socket.on('file', function (data) {
+	socket.on('taille', function (data) {
 		console.log(data);
 		});
 });
