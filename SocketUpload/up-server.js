@@ -27,15 +27,18 @@ wsServer.on('request', function(request) {
 		
         if (message.type === 'utf8') {
             // process WebSocket message
+			var json;
 				try {
-					var json = JSON.parse(message.data);
+					json = JSON.parse(message.utf8Data);
+					console.log('It\'s a JSON',message.data);
 			} catch (e) {
 					console.log('This doesn\'t look like a valid JSON: ', message.data);
+					
 					return;
 			}
 		
 				if (json.source === 'info') { // first response from the server with user's color
-					console.log('JSON is arrived !')
+					console.log('JSON is arrived !');
 			
 					var name= json.name;
 					var size= json.size;
@@ -43,9 +46,9 @@ wsServer.on('request', function(request) {
 					console.log("name: "+name+" ;size: "+size+" ;type: "+type+"");
 				}else {
 					console.log('Hmm..., I\'ve never seen JSON like this: ', json);
-				}
+				} 
 					console.log('Received Message: ' + message.utf8Data);
-			//	connection.sendUTF(message.utf8Data);
+				connection.sendUTF(message.utf8Data);
         }
 		else if (message.type === 'binary') {
             console.log('Received Binary Message of ' + message.binaryData.length + ' bytes');

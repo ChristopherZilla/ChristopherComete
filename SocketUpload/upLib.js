@@ -65,7 +65,7 @@
 				type: ftype
 			};
 			alert("POP");
-			connection.sendUTF(JSON.stringify(message));
+			connection.send(JSON.stringify(message));
 			
 		} 
 		
@@ -93,13 +93,13 @@
 			// action à effectuer lors du chargement des données
 			reader.onload = function(e){
 			
-				connection.sendBytes(e.target.result);
+				connection.send(e.target.result);
 			};
 				
 				// action à effectuer quand le chargement est fini.
 				reader.onloadend= function(e){
 					var contentFile= e.target.result; // récupération des données formant le fichier
-					connection.sendBytes(contentFile);
+					connection.send(contentFile);
 					alert("terminé"); // un alert pour signaler que l'upload et terminé.
 				}
 			} 
