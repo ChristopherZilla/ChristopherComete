@@ -12,7 +12,8 @@
     }
 
     var connection = new WebSocket('ws://127.0.0.1:1337');
-
+	
+	
     connection.onopen = function () {
         // connection is opened and ready to use
 		console.log('WebSocket client connected');
@@ -40,23 +41,23 @@
 		dropZone.addEventListener('drop', handleFileSelect, false);
 		dropZone.addEventListener('drop', getInfoFile, false);
 		
-		var dropBtn = document.getElementById("drop_btn"); // Ne semble pas fonctionner.
-		dropBtn.addEventListener('click',handleFileClickSelect, false); // Ne semble pas fonctionner. 
+		var dropBtn = document.getElementById("drop_btn");
+		dropBtn.addEventListener('click',handleFileClickSelect, false); 
 		
-		// Fonction récupérant les informations d'un fichier et renvoie un JSON.
+		//  Function to retrieve info from a file and put in a JSON
 		function getInfoFile(evt){
 			var files;
 			if(evt.type == 'drop'){
 			files = evt.dataTransfer.files;
 			}
 			else{
-			files = document.getElementById("file").files; // Récupération d'une liste de fichier.
+			files = document.getElementById("file").files; // Retrieve a list of file.
 			}
 			
-			var file = files[0]; // Récupération du premier fichier.
-			var fname = files[0].name; // Récupération du nom du fichier.
-			var fsize =  files[0].size; // Récupération de la taille du fichier.
-			var ftype = files[0].type; // Récupération du type de fichier.
+			var file = files[0]; // Retrieve the file name.
+			var fname = files[0].name; // Retrieve the file name.
+			var fsize =  files[0].size; // Retrieve the file size.
+			var ftype = files[0].type; // Retrieve the file type.
 			
 			var message = {
 				source: 'info',
@@ -70,43 +71,63 @@
 		} 
 		
 		function handleDragOver(evt){
-			evt.stopPropagation();
+		//	evt.stopPropagation();
 			evt.preventDefault();
 			evt.dataTransfer.dropEffect = 'copy'; 
 		}
 		
 		function handleFileSelect(evt){
-			evt.stopPropagation(); // Empêche la redirection.
-			evt.preventDefault(); // Empêcher le comportement par défaut du navigateur qui serait d'essayer d'afficher le fichier.
-		
+		//	evt.stopPropagation(); // Stop redirection. Useless here.
+			evt.preventDefault(); // Stop default behaviour.
+			var files;
+			var file;
+			var reader;
+			var contentFile;
+			var bytesArray;
+			var output=[];
+			
 			if(evt.type == 'drop'){
 			files = evt.dataTransfer.files;
 			
 			}
 			else{
-			files = document.getElementById("file").files; // Récupération d'une liste de fichier.
+			files = document.getElementById("file").files; // Retrieve a file list.
 			}
-			var file = files[0]; // Récupération du premier fichier.
+			file = files[0]; // Retrieve the first  file.
 		
-			var reader = new FileReader(); // Objet servant à lire le ficher.
-			reader.readAsArrayBuffer(file); // On demande à l'objet reader de lire le fichier.
-			// action à effectuer lors du chargement des données
-			reader.onload = function(e){
+			reader = new FileReader(); // Object to read the file.
+			reader.readAsArrayBuffer(file); // Reader read the file.
+			// Alternative maybe, with reader.readAsBinaryString(file)
+			//  reader.readAsBinaryString(file);
 			
+			// Action while data is loading.
+			reader.onload = function(e){
+				bytesArray = new Uint8Array(e.target.result);
+				
+				for(var i=0;i<bytesArray.length;i++){
+					connection.send(bytesArray[i]);
+					output.push('<li><strong>',bytesArray[i],'</strong></li>');
+				}
+				document.getElementById('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+				
+				
 				connection.send(e.target.result);
+			
+			
+				
 			};
 				
-				// action à effectuer quand le chargement est fini.
+				// action à effectuer quand le chargement est fini. Action at the end of the loading.
 				reader.onloadend= function(e){
-					var contentFile= e.target.result; // récupération des données formant le fichier
-					connection.send(contentFile);
-					alert("terminé"); // un alert pour signaler que l'upload et terminé.
+					
+					connection.send(e.target.result);
+					
+					alert("terminé"); // an alert to warn about the end.
 				}
 			} 
 }
 
 upload(); 
-
 
 
 
