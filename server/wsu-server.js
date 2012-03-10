@@ -1,4 +1,4 @@
-// Node server by ChristopherZilla, ask me for information or see my Github.
+﻿// Node server by ChristopherZilla, ask me for information or see my Github.
 var WebSocketServer = require('ws').Server;
 var http = require('http');
 var fs = require('fs');

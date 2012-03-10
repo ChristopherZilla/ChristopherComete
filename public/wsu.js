@@ -1,4 +1,4 @@
-window.WebSocket = window.WebSocket || window.MozWebSocket;
+﻿window.WebSocket = window.WebSocket || window.MozWebSocket;
 // if browser doesn't support WebSocket, just show some notification and exit
     if (!window.WebSocket) {
       
@@ -6,12 +6,17 @@ window.WebSocket = window.WebSocket || window.MozWebSocket;
      // return;
     } 
 	var connection = new WebSocket('ws://127.0.0.1:8080');
-	
+
+	var startTime = 0;
+	var start = 0;
+	var end = 0;
+	var diff = 0;
+	var timerID = 0;
 
 connection.onopen = function () {
         // connection is opened and ready to use
 		console.log('WebSocket client connected');
-		upload();
+		prepare();
 		};
 		
 connection.onerror = function (error) {
@@ -30,7 +35,7 @@ connection.onmessage = function (message) {
         // handle incoming message
     };
 	
-function upload(){
+function prepare(){
 
 	 
 	
@@ -83,9 +88,9 @@ function firstSlice(evt){
 				};
 		
 				connection.send(JSON.stringify(message)); 
-				secondSlice(evt,i);
+				upload(evt,i);
 			}
-	upload();
+	prepare();
 }
 
 
@@ -108,13 +113,39 @@ function progressNote(evt){
 	var percentUploaded;
 	if(evt.lengthComputable){
 		var percentUploaded = Math.round((evt.loaded / evt.total) * 100);
-		if(percentUploaded <100){
-			document.getElementById('drop_zone').innerHTML = percentUploaded+' %';
+		if(percentUploaded <=100){
+			document.getElementById('percent').innerHTML = percentUploaded+' %';
+			document.getElementById('progres').value = percentUploaded;
 		}
 	}
 }
 
-function secondSlice(evt,i){
+function chrono(){
+	end = new Date();
+	diff = end - start;
+	diff = new Date(diff);
+	var msec = diff.getMilliseconds();
+	var sec = diff.getSeconds();
+	var min = diff.getMinutes();
+	var hr = diff.getHours()-1;
+	if (min < 10){
+		min = "0" + min;
+	}
+	if (sec < 10){
+		sec = "0" + sec;
+	}
+	if(msec < 10){
+		msec = "00" +msec;
+	}
+	else if(msec < 100){
+		msec = "0" +msec;
+	}
+	document.getElementById("chronotime").innerHTML = hr + ":" + min + ":" + sec + ":" + msec;
+	timerID = setTimeout("chrono()", 10);
+}
+
+
+function upload(evt,i){
 	evt.preventDefault();
 	var files;
 	var file;
@@ -132,32 +163,45 @@ function secondSlice(evt,i){
 	
 	
 	
-	reader = new FileReader(); // Object to read the file.
-	reader.readAsArrayBuffer(file); // Reader read the file.
-	
+	reader = new FileReader();// Object to read the file.
+	reader.onerror = errorHandler;
+	reader.onprogress = progressNote;
+	reader.onabort = function(e){
+		alert('File read cancelled');
+    };
+		reader.onloadstart = function(e){
+		start = new Date();
+		chrono();
+		
+	};
+
 	reader.onabort = function(e){
 		alert('File read cancelled');
     };
 	
-	reader.onerror = errorHandler;
-	reader.onprogress = progressNote;
 	
 	reader.onload = function(e){
-
+	//	start = new Date();
+	//	chrono();
 
 						
-						connection.send(e.target.result);
-						if(i<1){
-							document.getElementById('drop_zone').innerHTML= i+1+' file uploaded this time';
-						}
-						else{
-							document.getElementById('drop_zone').innerHTML= i+1+' files uploaded this time';
-						}
-					};
+		connection.send(e.target.result);
+		if(i<1){
+				document.getElementById('drop_zone').innerHTML= i+1+' file uploaded this time';
+				clearTimeout(timerID);
+				}
+		else{
+				document.getElementById('drop_zone').innerHTML= i+1+' files uploaded this time';
+				clearTimeout(timerID);
+			}
+	};
 				
-	// action � effectuer quand le chargement est fini. Action at the end of the loading.
+	// action à effectuer quand le chargement est fini. Action at the end of the loading.
 	reader.onloadend= function(e){
-						connection.send("end");
 						
-			};
+						connection.send("end");
+							clearTimeout(timerID);
+	};
+	
+	reader.readAsArrayBuffer(file); // Reader read the file.
 } 
