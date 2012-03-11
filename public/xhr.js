@@ -1,4 +1,4 @@
-var xhr = new XMLHttpRequest();
+﻿var xhr = new XMLHttpRequest();
 	var xhrstartTime = 0;
 	var xhrstart = 0;
 	var xhrend = 0;
@@ -92,36 +92,40 @@ function xhrupload(evt,i) {
 	else{
 		files = document.getElementById("file").files; // Retrieve a list of file.
 		}
+	var formData = new FormData();
+	
 	file = files[i];
+	formData.append('file',file);
 	xhr.open("POST", "http://localhost:8888/getfile", true);
-	xhr.responseType = 'text';
+/*	var boundary = "--------XX" + Math.random();
+	var body = '--' + boundary + "\r\n";  
+	body += "Content-Disposition: form-data; name='upload'; filename='" + file.name + "'\r\n";  
+				body += "Content-Type: text/plain\r\n\r\n";  
+				body += file + "\r\n";  
+				body += '--' + boundary + '--';      
+				xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);*/
+//	xhr.setRequestHeader('content-type', 'multipart/form-data; boundary=' + boundary);
 	xhr.upload.onprogress = xhrprogressNote;
-	
-/*	xhr.onload = function(e){
-		xhr.send(this.result);
-	};*/
-	
-	reader = new FileReader();
-	reader.onloadstart = function(e){
-		xhrstart = new Date();
-		xhrchrono();
-		
-	};
-	reader.onload = function(e){
+					
 
-		xhr.send(e.target.result);
-		alert('' + e.target.result);
-		if(i<1){
+	xhr.onload = function(e){
+	//	alert(e.target.response);
+	/*	if(i<1){
 				document.getElementById('xhrdrop_zone').innerHTML= i+1+' file uploaded this time';
 				clearTimeout(xhrtimerID);
 				}
 		else{
 				document.getElementById('xhrdrop_zone').innerHTML= i+1+' files uploaded this time';
 				clearTimeout(xhrtimerID);
-			}
-	};
-reader.readAsDataURL(file);
-
+			} */
+	}; 
+	
+	
+	//	xhrstart = new Date();
+	//	xhrchrono();
+	
+		xhr.send(body);
+	
  }
   
   
