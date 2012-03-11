@@ -1,3 +1,10 @@
+var xhr = new XMLHttpRequest();
+	var xhrstartTime = 0;
+	var xhrstart = 0;
+	var xhrend = 0;
+	var xhrdiff = 0;
+	var xhrtimerID = 0;
+
 function xhrprepare(){
 		alert("xhrprepare");
 		var xhrdropZone = document.getElementById("xhrdrop_zone");
@@ -7,13 +14,10 @@ function xhrprepare(){
 		
 	var xhrdropBtn = document.getElementById("xhrdrop_btn");
 		xhrdropBtn.addEventListener('click',xhrfirstSlice, false);
-	var xhr = new XMLHttpRequest();
-	var xhrstartTime = 0;
-	var xhrstart = 0;
-	var xhrend = 0;
-	var xhrdiff = 0;
-	var xhrtimerID = 0;
+
 }
+
+
 
 function xhrhandleDragOver(evt){
 		
@@ -39,7 +43,6 @@ function xhrfirstSlice(evt){
 	
 	for(i=0;i<files.length;i++){
 		file = files[i];
-		//upload(file);
 		alert("xhrfirstSlice");
 		xhrupload(evt,i);
 		
@@ -72,6 +75,7 @@ function xhrchrono(){
 }
 
 function xhrupload(evt,i) {
+	
 	evt.preventDefault();
 	var files;
 	var file;
@@ -88,28 +92,25 @@ function xhrupload(evt,i) {
 	else{
 		files = document.getElementById("file").files; // Retrieve a list of file.
 		}
-		
+	file = files[i];
 	xhr.open("POST", "http://localhost:8888/getfile", true);
-	alert("xhrupload");
-	xhr.responseType = 'arraybuffer';
-	xhr.upload.onprogress = progressNote;
+	xhr.responseType = 'text';
+	xhr.upload.onprogress = xhrprogressNote;
 	
-	xhr.onload = function(e) {
-		alert('presk');
-		content = this.response;
-		xhr.setRequestHeader('x-File-Name', file.name);
-		for(i=0;i<files.length;i++){
-			var fsize = file.size;
-			debut = 0;
-			fin = 0;
-				while(debut < fsize){
-					chunk = content.subarray(début,fin);
-					xhr.send(chunk);	
-					xhrdebut = fin;
-					xhrfin = debut + BYTES_PER_CHUNK;
-				}
-		}
+/*	xhr.onload = function(e){
+		xhr.send(this.result);
+	};*/
+	
+	reader = new FileReader();
+	reader.onloadstart = function(e){
+		xhrstart = new Date();
+		xhrchrono();
 		
+	};
+	reader.onload = function(e){
+
+		xhr.send(e.target.result);
+		alert('' + e.target.result);
 		if(i<1){
 				document.getElementById('xhrdrop_zone').innerHTML= i+1+' file uploaded this time';
 				clearTimeout(xhrtimerID);
@@ -119,8 +120,9 @@ function xhrupload(evt,i) {
 				clearTimeout(xhrtimerID);
 			}
 	};
+reader.readAsDataURL(file);
 
-  }
+ }
   
   
   
@@ -150,4 +152,5 @@ function xhrprogressNote(evt){
 	}
 }
 
-xhrprepare();
+window.onload = xhrprepare;
+
